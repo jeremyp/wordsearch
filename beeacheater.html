@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Letter Filter</title>
+    <script src="wordList.js"></script>
+</head>
+<body>
+    <label for="requiredLetter">Required letter:</label>
+    <input type="text" id="requiredLetter" maxlength="1" oninput="this.value = this.value.toLowerCase()" placeholder="e.g., a">
+
+    <label for="otherLetters">Other letters:</label>
+    <input type="text" id="otherLetters" maxlength="6" oninput="this.value = this.value.toLowerCase()" placeholder="e.g., bcdfgh">
+
+    <button onclick="filterWords()">Find Words</button>
+    <div id="resultContainer"></div>
+
+    <script>
+        function filterWords() {
+            const requiredLetter = document.getElementById('requiredLetter').value;
+            const otherLetters = document.getElementById('otherLetters').value;
+            if (!requiredLetter || requiredLetter.length !== 1) {
+                alert('Please enter one required letter.');
+                return;
+            }
+
+            const allowedLetters = requiredLetter + otherLetters;
+            const regex = new RegExp(`^[${allowedLetters}]+$`);
+
+            const filteredWords = wordList.filter(word => 
+                word.includes(requiredLetter) && regex.test(word)
+            );
+
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.innerHTML = ''; // Clear previous results
+
+            filteredWords.forEach(word => {
+                const element = document.createElement('div');
+                element.textContent = word;
+                resultContainer.appendChild(element);
+            });
+        }
+    </script>
+</body>
+</html>
