@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Typeahead Optimization Example</title>
+    <style>
+        /* Basic styling for the results container */
+        #resultContainer {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="searchBox" placeholder="Start typing...">
+    <div id="resultContainer"></div>
+    <script src="wordList.js"></script>
+    <script>
+        // Simulate loading a large list
+
+        // Example of a basic trie implementation for efficient searching
+        class TrieNode {
+            constructor() {
+                this.children = {};
+                this.isEndOfWord = false;
+            }
+        }
+
+        class Trie {
+            constructor() {
+                this.root = new TrieNode();
+            }
+
+            insert(word) {
+                let current = this.root;
+                for (const char of word) {
+                    if (!current.children[char]) {
+                        current.children[char] = new TrieNode();
+                    }
+                    current = current.children[char];
+                }
+                current.isEndOfWord = true;
+            }
+
+            search(prefix) {
+                let current = this.root;
+                for (const char of prefix) {
+                    if (!current.children[char]) {
+                        return [];
+                    }
+                    current = current.children[char];
+                }
+                return this.collectAllWords(current, prefix);
+            }
+
+            collectAllWords(node, prefix, words = []) {
+                if (node.isEndOfWord) {
+                    words.push(prefix);
+                }
+                for (const [char, child] of Object.entries(node.children)) {
+                    this.collectAllWords(child, prefix + char, words);
+                }
+                return words;
+            }
+        }
+
+        const trie = new Trie();
+        wordList.forEach(word => trie.insert(word.toLowerCase()));
+
+        document.getElementById('searchBox').addEventListener('input', debounce(function() {
+            const input = this.value.toLowerCase();
+            const results = trie.search(input);
+
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.innerHTML = ''; // Clear previous results
+
+            results.slice(0, 100).forEach(word => { // Limit number of displayed results
+                const element = document.createElement('div');
+                element.textContent = word;
+                resultContainer.appendChild(element);
+            });
+        }, 250));
+
+        function debounce(func, delay) {
+            let timeoutId;
+            return function(...args) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+    </script>
+</body>
+</html>
