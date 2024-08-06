@@ -80,7 +80,7 @@
             const regex = new RegExp(`^[${allowedLetters}]+$`);
 
             const filteredWords = wordList.filter(word => 
-                word.includes(requiredLetter) && regex.test(word)
+                word.includes(requiredLetter) && regex.test(word) && word.length >= 4
             );
 
             const resultContainer = document.getElementById('resultContainer');
