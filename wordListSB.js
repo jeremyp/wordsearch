@@ -111769,5 +111769,3 @@ const wordList = [
   "zymotic",
   "zymurgy",
 ];
-
-export default wordList;
